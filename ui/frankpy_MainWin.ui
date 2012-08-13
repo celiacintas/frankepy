@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>910</width>
+    <height>516</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>FrackPy</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>19</x>
+      <y>11</y>
+      <width>878</width>
+      <height>444</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="minimumSize">
+        <size>
+         <width>379</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>379</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Valores Actuales de la Muestra</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" rowspan="4">
+      <widget class="QWidget" name="widget" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>491</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>491</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QTableWidget" name="tableWidget">
+       <property name="minimumSize">
+        <size>
+         <width>379</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>379</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="minimumSize">
+        <size>
+         <width>379</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>379</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Valores Procesados de la Muestra</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QTableWidget" name="tableWidget_2">
+       <property name="minimumSize">
+        <size>
+         <width>379</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>379</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>910</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuArchivo">
+    <property name="title">
+     <string>Muestras</string>
+    </property>
+    <addaction name="actionAbrir_Muestra"/>
+    <addaction name="actionBorrar_Muestra"/>
+   </widget>
+   <widget class="QMenu" name="menuOpciones">
+    <property name="title">
+     <string>Opciones</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionSplines"/>
+    <addaction name="actionCentrar"/>
+    <addaction name="actionIntegrar"/>
+   </widget>
+   <widget class="QMenu" name="menuSalida">
+    <property name="title">
+     <string>Salida</string>
+    </property>
+    <addaction name="actionGuardar_Resultados"/>
+    <addaction name="actionExportar_a"/>
+   </widget>
+   <widget class="QMenu" name="menuCreditos">
+    <property name="title">
+     <string>Ayuda</string>
+    </property>
+    <addaction name="actionCreditos"/>
+   </widget>
+   <addaction name="menuArchivo"/>
+   <addaction name="menuOpciones"/>
+   <addaction name="menuSalida"/>
+   <addaction name="menuCreditos"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionAbrir_Muestra">
+   <property name="text">
+    <string>Cargar Muestra ..</string>
+   </property>
+  </action>
+  <action name="actionSplines">
+   <property name="text">
+    <string>Splines</string>
+   </property>
+  </action>
+  <action name="actionCentrar">
+   <property name="text">
+    <string>Centrar</string>
+   </property>
+  </action>
+  <action name="actionIntegrar">
+   <property name="text">
+    <string>Integrar</string>
+   </property>
+  </action>
+  <action name="actionGuardar_Resultados">
+   <property name="text">
+    <string>Guardar Gráficos y Tablas</string>
+   </property>
+  </action>
+  <action name="actionExportar_a">
+   <property name="text">
+    <string>Exportar a ...</string>
+   </property>
+  </action>
+  <action name="actionCreditos">
+   <property name="text">
+    <string>Creditos</string>
+   </property>
+  </action>
+  <action name="actionBorrar_Muestra">
+   <property name="text">
+    <string>Borrar Muestra ..</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
