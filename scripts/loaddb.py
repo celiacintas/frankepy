@@ -20,41 +20,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Authors:
-#       Natalia Bidart (nataliabidart at gmail dot com)
-#       Celia Cintas    (cintas.celia at gmail dot com) in sqlite implementation.
+#       Celia Cintas    (cintas.celia at gmail dot com)
 # $ Other authors contributing to the code are indicated in the corresponding line$
 import csv
 import sys
 import sqlite3 as lite
-
-DELIMITER_IN = ' '  # delimiter to read input data, change to whatever you need
-DELIMITER_OUT = ' ' # delimiter to store output data, change to whatever you need
-DELIMITER_ASCII_OUT = ' ' # delimiter to store ascii data, change to whatever you need
-
-COLUMN_X = 0 # 0-based column index to read data from to build x-values
-COLUMN_Y = 1 # 0-based column index to read data from to build y-values
-
-def load_data(filename):
-    """Load data from file at location filename."""
-
-    x_values = []
-    y_values = []
-
-    f = open(filename, 'r')
-    reader = csv.reader(f, delimiter=DELIMITER_IN)
-    for line in reader:
-        try:
-            x, y = float(line[COLUMN_X]), float(line[COLUMN_Y])
-            x_values.append(x)
-            y_values.append(y)
-        except IndexError:
-            print('Index error when accessing values for line %s' % (line,))
-        except ValueError:
-            print('Cast error when converting to float for line %s' % (line,))
-
-    f.close()
-
-    return x_values, y_values
+from calculos import load_data
 
 def insert_data(filename, x_values, y_values, mydb):
     """Insert data into db"""
