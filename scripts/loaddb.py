@@ -55,6 +55,6 @@ def insert_data(filename, x_values, y_values, mydb):
 
  
 if __name__ == '__main__':
-    x, y = load_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt")
+    x, y = load_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt") #TODO cambiar por relativos
     insert_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt", x, y, "/home/celita/Documentos/FaMAF/Frankepy/db/frank")
     
