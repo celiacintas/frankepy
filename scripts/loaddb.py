@@ -20,9 +20,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Authors:
-#       Celia Cintas    (cintas.celia at gmail dot com)
 #       Natalia Bidart (nataliabidart at gmail dot com)
-
+#       Celia Cintas    (cintas.celia at gmail dot com) in sqlite implementation.
 # $ Other authors contributing to the code are indicated in the corresponding line$
 import csv
 import sys
@@ -85,5 +84,5 @@ def insert_data(filename, x_values, y_values, mydb):
  
 if __name__ == '__main__':
     x, y = load_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt")
-    insert_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt", x, y, "/home/celita/Documentos/FaMAF/Frankepy/frank")
+    insert_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt", x, y, "/home/celita/Documentos/FaMAF/Frankepy/db/frank")
     
