@@ -22,6 +22,7 @@
 # Authors:
 #       Celia Cintas    (cintas.celia at gmail dot com)
 # $ Other authors contributing to the code are indicated in the corresponding line$
+
 import csv
 import sys
 import sqlite3 as lite
