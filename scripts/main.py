@@ -34,36 +34,11 @@ except ImportError:
     print('Please install python-matplotlib')
     sys.exit(1)
 
-try:
-    from numpy import linspace, random
-    from scipy import interpolate, integrate
-except ImportError:
-    print('Please install python-numpy')
-    sys.exit(1)
-
-try:
-    from scipy import interpolate, integrate
-except ImportError:
-    print('Please install python-scipy')
-    sys.exit(1)
 
 # controls if spline is applied to input data or not
 DO_SPLINE = False
 
-# x-coord to be used to re-center the graphic on y-coord.
-# Use X_0 = None to avoid recentering
-#X_0 = None
-
-#DELIMITER_IN = ' '  # delimiter to read input data, change to whatever you need
-#DELIMITER_OUT = ' ' # delimiter to store output data, change to whatever you need
-#DELIMITER_ASCII_OUT = ' ' # delimiter to store ascii data, change to whatever you need
-
-#COLUMN_X = 0 # 0-based column index to read data from to build x-values
-#COLUMN_Y = 1 # 0-based column index to read data from to build y-values
-#INTERVAL_START = 0.269165039062500000# x-coord indicating the start of the interval to calculate
-                   
-#INTERVAL_END = 0.279235839843750000# x-coord indicating the end of the interval to calculate
-                   
+           
 def usage_and_exit():
     program_name = sys.argv[0]
     msg = """Usage: %s <input-file> <output-file> <ascii-file> <ascii_selected_range-file>
