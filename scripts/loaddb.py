@@ -28,9 +28,10 @@ import sys
 import sqlite3 as lite
 from calculos import load_data
 
-def insert_data(filename, x_values, y_values, mydb):
-    """Insert data into db"""
+def insert_data(filename, mydb):
+    """Insert data from file into db and return the x's y's values for ploting"""
     
+    x_values, y_values = load_data(filename)
     try:
         con = lite.connect(mydb)
     
@@ -42,6 +43,8 @@ def insert_data(filename, x_values, y_values, mydb):
         map(lambda pos : cursor.execute("INSERT INTO pos VALUES(?,NULL,?,?)", (id_muestra[0], float(pos[0]), float(pos[1]))), zip(x_values, y_values))
         con.commit()
         cursor.close()
+        
+        return x_values, y_values
         
     except lite.Error, e:
        if con:
@@ -55,6 +58,7 @@ def insert_data(filename, x_values, y_values, mydb):
 
  
 if __name__ == '__main__':
-    x, y = load_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt") #TODO cambiar por relativos
-    insert_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt", x, y, "/home/celita/Documentos/FaMAF/Frankepy/db/frank")
+    pass
+   # x, y = load_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt") #TODO cambiar por relativos
+   # insert_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt", x, y, "/home/celita/Documentos/FaMAF/Frankepy/db/frank")
     
