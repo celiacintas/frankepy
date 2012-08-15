@@ -56,7 +56,10 @@ def insert_data(filename, mydb):
         if con:
            con.close() 
 
- 
+def dump_data(x_values, y_values):
+    """Dump values into the db """
+    pass
+    
 if __name__ == '__main__':
     pass
    # x, y = load_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt") #TODO cambiar por relativos
