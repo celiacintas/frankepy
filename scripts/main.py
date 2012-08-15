@@ -37,7 +37,7 @@ except ImportError:
 
 # controls if spline is applied to input data or not
 DO_SPLINE = False
-
+MYDB = "../db/frank"
            
 def usage_and_exit():
     program_name = sys.argv[0]
@@ -59,7 +59,7 @@ if __name__ == '__main__':
         usage_and_exit()
 
     # get initial data from db
-    x_values, y_values = insert_data(input_file)
+    x_values, y_values = insert_data(input_file, MYDB)
     
     # plot initial data
     pylab.subplot(2,1,1)
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 
     # show results and dump to file 
     #TODO dump to tex and db
-    dump_data(output_file, pos, neg)
+    dump_data(input_file, MYDB, pos, neg)
 
     # show all the plots
     pylab.show()

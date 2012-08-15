@@ -40,7 +40,7 @@ def insert_data(filename, mydb):
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
         
-        map(lambda pos : cursor.execute("INSERT INTO pos VALUES(?,NULL,?,?)", (id_muestra[0], float(pos[0]), float(pos[1]))), zip(x_values, y_values))
+        map(lambda pos : cursor.execute("INSERT INTO pos_in VALUES(?,NULL,?,?)", (id_muestra[0], float(pos[0]), float(pos[1]))), zip(x_values, y_values))
         con.commit()
         cursor.close()
         
@@ -56,10 +56,30 @@ def insert_data(filename, mydb):
         if con:
            con.close() 
 
-def dump_data(x_values, y_values):
+def dump_data(filename, mydb, x_values, y_values):
     """Dump values into the db """
-    pass
     
+    try:
+        con = lite.connect(mydb)
+    
+        cursor = con.cursor()
+        cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
+        id_muestra = cursor.fetchone()
+        
+        map(lambda pos : cursor.execute("INSERT INTO pos_out VALUES(?,NULL,?,?)", (id_muestra[0], float(pos[0]), float(pos[1]))), zip(x_values, y_values))
+        con.commit()
+        cursor.close()
+        
+    except lite.Error, e:
+       if con:
+          con.rollback()
+          print "Error %s:" % e.args[0]
+          sys.exit(1)
+       
+    finally:
+        if con:
+           con.close() 
+
 if __name__ == '__main__':
     pass
    # x, y = load_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt") #TODO cambiar por relativos
