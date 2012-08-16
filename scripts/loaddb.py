@@ -45,6 +45,11 @@ def insert_data(filename, mydb):
         cursor.close()
         
         return x_values, y_values
+    
+    except lite.DatabaseError, e:
+        print u"Datos ya levantados se trabajará con los existentes en la db"
+        
+        return x_values, y_values
         
     except lite.Error, e:
        if con:
@@ -82,6 +87,4 @@ def dump_data(filename, mydb, x_values, y_values):
 
 if __name__ == '__main__':
     pass
-   # x, y = load_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt") #TODO cambiar por relativos
-   # insert_data("/home/celita/Documentos/FaMAF/requerimientos/12096-CV.txt", x, y, "/home/celita/Documentos/FaMAF/Frankepy/db/frank")
     

@@ -25,7 +25,7 @@
 #just refactoring for the implementation of the db 
 
 import sys
-from loaddb import insert_data
+from loaddb import insert_data, dump_data
 from calculos import plot_data, do_spline, recenter, diff_integrate
 
 try:
@@ -37,6 +37,8 @@ except ImportError:
 
 # controls if spline is applied to input data or not
 DO_SPLINE = False
+
+# location of db
 MYDB = "../db/frank"
            
 def usage_and_exit():
@@ -52,9 +54,9 @@ Example:
 if __name__ == '__main__':
     try:
         input_file = sys.argv[1]
-        output_file = sys.argv[2]
-        ascii_file = sys.argv[3]
-        ascii_selected_range_output_file = sys.argv[4]
+        #output_file = sys.argv[2]
+        #ascii_file = sys.argv[3]
+        #ascii_selected_range_output_file = sys.argv[4]
     except Exception, e:
         usage_and_exit()
 
@@ -65,8 +67,8 @@ if __name__ == '__main__':
     pylab.subplot(2,1,1)
     pylab.axhline() # draw line for y-coord 0
     plot_data(x_values, y_values, color='red', label='Initial data')
-    save_ascii(ascii_file, x_values, y_values)
-    save_ascii_selected_range(ascii_selected_range_output_file, x_values, y_values)
+    #save_ascii(ascii_file, x_values, y_values)
+    #save_ascii_selected_range(ascii_selected_range_output_file, x_values, y_values)
 
     if DO_SPLINE:
         # calculate spline
@@ -87,7 +89,9 @@ if __name__ == '__main__':
 
     # show results and dump to file 
     #TODO dump to tex and db
-    dump_data(input_file, MYDB, pos, neg)
+    print "Integral pos y neg ", pos, neg 
+    
+    dump_data(input_file, MYDB, [pos], [neg])
 
     # show all the plots
     pylab.show()
