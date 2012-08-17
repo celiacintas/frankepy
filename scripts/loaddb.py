@@ -26,7 +26,7 @@
 import csv
 import sys
 import sqlite3 as lite
-from calculos import load_data
+from calculos import load_data, INTERVAL_START, INTERVAL_END
 
 def insert_data(filename, mydb):
     """Insert data from file into db and return the x's y's values for ploting"""
@@ -40,7 +40,7 @@ def insert_data(filename, mydb):
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
         
-        map(lambda pos : cursor.execute("INSERT INTO pos_in VALUES(?,NULL,?,?)", (id_muestra[0], float(pos[0]), float(pos[1]))), zip(x_values, y_values))
+        map(lambda pos : cursor.execute("INSERT INTO pos_in VALUES(?,NULL,?,?, NULL)", (id_muestra[0], float(pos[0]), float(pos[1]))), zip(x_values, y_values))
         con.commit()
         cursor.close()
         
@@ -61,7 +61,7 @@ def insert_data(filename, mydb):
         if con:
            con.close() 
 
-def dump_data(filename, mydb, x_values, y_values):
+def dump_data(filename, mydb, x_values, y_values, about):
     """Dump values into the db """
     
     try:
@@ -71,7 +71,7 @@ def dump_data(filename, mydb, x_values, y_values):
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
         
-        map(lambda pos : cursor.execute("INSERT INTO pos_out VALUES(?,NULL,?,?)", (id_muestra[0], float(pos[0]), float(pos[1]))), zip(x_values, y_values))
+        map(lambda pos : cursor.execute("INSERT INTO pos_out VALUES(?, NULL,?,?,?, NULL, NULL, NULL)", (id_muestra[0], about, float(pos[0]), float(pos[1]))), zip(x_values, y_values))
         con.commit()
         cursor.close()
         
@@ -85,9 +85,42 @@ def dump_data(filename, mydb, x_values, y_values):
         if con:
            con.close() 
            
-def dump_data_in_range():
+def dump_data_in_range(filename, mydb, x_values, y_values):
     """Dump values in certain range into the db """
-    pass
+    #this part of the code is from Lucia, just adding map for dump in the db
+    
+    filter_function = lambda (x, y): INTERVAL_START <= x <= INTERVAL_END
+    if INTERVAL_START > INTERVAL_END:
+        print('NOTICE: The interval start %s is bigger than the interval end %s, using all the data.' %
+              (INTERVAL_START, INTERVAL_END))
+        interval_values = zip(x_values, y_values)
+    else:
+        print('NOTICE: Calculating integrals for every value in the closed interval [%s, %s].' %
+              (INTERVAL_START, INTERVAL_END))
+        interval_values = filter(filter_function, zip(x_values, y_values))
+        
+    try:
+        con = lite.connect(mydb)
+    
+        cursor = con.cursor()
+        cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
+        id_muestra = cursor.fetchone()
+        
+        map(lambda values : cursor.execute("INSERT INTO pos_out VALUES(?, NULL, NULL, ?, ?, NULL, ?, ?)", 
+        (id_muestra[0], float(values[0])/1.0, float(values[1]), INTERVAL_START, INTERVAL_END)), interval_values)
+        
+        con.commit()
+        cursor.close()
+        
+    except lite.Error, e:
+       if con:
+          con.rollback()
+          print "Error %s:" % e.args[0]
+          sys.exit(1)
+       
+    finally:
+        if con:
+           con.close() 
 
 if __name__ == '__main__':
     pass

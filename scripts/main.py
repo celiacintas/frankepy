@@ -25,7 +25,7 @@
 #just refactoring for the implementation of the db 
 
 import sys
-from loaddb import insert_data, dump_data
+from loaddb import insert_data, dump_data, dump_data_in_range
 from calculos import plot_data, do_spline, recenter, diff_integrate
 
 try:
@@ -43,10 +43,10 @@ MYDB = "../db/frank"
            
 def usage_and_exit():
     program_name = sys.argv[0]
-    msg = """Usage: %s <input-file> <ascii_selected_range-file>
+    msg = """Usage: %s <input-file> 
 
 Example:
-%s CVchapita08V.txt test.txt ascii.txt ascii_selected_range-file.txt
+%s CVchapita08V.txt 
 """ % (program_name, program_name)
     print(msg)
     sys.exit(1)
@@ -54,9 +54,7 @@ Example:
 if __name__ == '__main__':
     try:
         input_file = sys.argv[1]
-        #output_file = sys.argv[2]
-        #ascii_file = sys.argv[3]
-        #ascii_selected_range_output_file = sys.argv[4]
+       
     except Exception, e:
         usage_and_exit()
 
@@ -67,9 +65,7 @@ if __name__ == '__main__':
     pylab.subplot(2,1,1)
     pylab.axhline() # draw line for y-coord 0
     plot_data(x_values, y_values, color='red', label='Initial data')
-    #save_ascii(ascii_file, x_values, y_values)
-    #save_ascii_selected_range(x_values, y_values)
-    #dump_data_in_range() #TODO llevar a la db los valores en rango
+    dump_data_in_range(input_file, MYDB, x_values, y_values) #TODO llevar a la db los valores en rango
     if DO_SPLINE:
         # calculate spline
         plot_data(x_values, y_values, color='red', label='Initial')
@@ -87,11 +83,8 @@ if __name__ == '__main__':
     # calculate positive and negative integrals
     pos, neg = diff_integrate(x_values, y_values)
 
-    # show results and dump to file 
-    #TODO dump to tex and db
-    print "Integral pos y neg ", pos, neg 
-    
-    dump_data(input_file, MYDB, [pos], [neg])
+    # dump results to db with some sort of comment 
+    dump_data(input_file, MYDB, [pos], [neg], "Integrals positive and negative")
 
     # show all the plots
     pylab.show()
