@@ -47,7 +47,7 @@ def insert_data(filename, mydb):
         return x_values, y_values
     
     except lite.DatabaseError, e:
-        print u"Datos ya levantados se trabajará con los existentes en la db"
+        print u"Data already in the db, working with them anywhere"
         
         return x_values, y_values
         
@@ -84,6 +84,10 @@ def dump_data(filename, mydb, x_values, y_values):
     finally:
         if con:
            con.close() 
+           
+def dump_data_in_range():
+    """Dump values in certain range into the db """
+    pass
 
 if __name__ == '__main__':
     pass

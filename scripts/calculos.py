@@ -187,7 +187,7 @@ def dump_data(output_file, pos, neg):
 
 def save_ascii_selected_range(ascii_selected_range_output_file, x_values, y_values): #This piece of code was modified by Lucia B. Avalle!!
 
-    f = open(ascii_selected_range_output_file, 'w')
+    #f = open(ascii_selected_range_output_file, 'w')
 
     filter_function = lambda (x, y): INTERVAL_START <= x <= INTERVAL_END
     if INTERVAL_START > INTERVAL_END:

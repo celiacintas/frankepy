@@ -43,7 +43,7 @@ MYDB = "../db/frank"
            
 def usage_and_exit():
     program_name = sys.argv[0]
-    msg = """Usage: %s <input-file> <output-file> <ascii-file> <ascii_selected_range-file>
+    msg = """Usage: %s <input-file> <ascii_selected_range-file>
 
 Example:
 %s CVchapita08V.txt test.txt ascii.txt ascii_selected_range-file.txt
@@ -68,8 +68,8 @@ if __name__ == '__main__':
     pylab.axhline() # draw line for y-coord 0
     plot_data(x_values, y_values, color='red', label='Initial data')
     #save_ascii(ascii_file, x_values, y_values)
-    #save_ascii_selected_range(ascii_selected_range_output_file, x_values, y_values)
-
+    #save_ascii_selected_range(x_values, y_values)
+    #dump_data_in_range() #TODO llevar a la db los valores en rango
     if DO_SPLINE:
         # calculate spline
         plot_data(x_values, y_values, color='red', label='Initial')
