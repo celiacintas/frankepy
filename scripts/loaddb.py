@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">
+#<img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" 
+#/></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Tribute to my son</span> by 
+#<a xmlns:cc="http://creativecommons.org/ns#" href="takenoko@home"
+# property="cc:attributionName" rel="cc:attributionURL">Lucía B. Avalle</a> is licensed under a 
+#<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0
+# Unported License</a>.
+ 
 # Copyright 2012
 # Lucía B. Avalle
 # Grupo de Electroquímica Experimental y Teórica, FaMAF, UNC
@@ -122,6 +130,27 @@ def dump_data_in_range(filename, mydb, x_values, y_values):
         if con:
            con.close() 
 
+
+def usage_and_exit():
+    program_name = sys.argv[0]
+    msg = """Usage: %s <input-file> 
+
+Example:
+%s CVchapita08V.txt 
+""" % (program_name, program_name)
+    print(msg)
+    sys.exit(1)
+
 if __name__ == '__main__':
-    pass
+
+    # location of db
+    MYDB = "../db/frank"
+
+    try:
+        input_file = sys.argv[1]
+    
+    except Exception, e:
+        usage_and_exit()
+        
+    x_values, y_values = insert_data(input_file, MYDB)
     
