@@ -25,7 +25,7 @@
 
 # Authors:
 #       Leoncio Juan Ernesto L\'opez (anicholo at gmail dot com)
-#       Just changes for the db
+#       Just refactoring for the db (Celia Cintas - cintas.celia at gmail dot com)
  
 from commonASCIICSV import get_values_from, generate_values
 from loaddb import dump_data
