@@ -38,6 +38,11 @@ try:
 except ImportError:
     print('Please install python-scipy')
     sys.exit(1)
+try:
+    import pylab
+except ImportError:
+    print('Please install python-matplotlib')
+    sys.exit(1)
 
 
 def do_std(values):
@@ -46,5 +51,19 @@ def do_std(values):
 
 def do_linealregression(x_values, y_values):
     """ """
-    #this returns slope, intercept, r_value, p_value and std_err.
-    return linregress(x_values, y_values)
+    slope, intercept, r_value, p_value, std_err = linregress(x_values, y_values)
+    #print "slope", slope
+    #print "intercept", intercept
+    #print "r_value", r_value
+    #print "p_value", std_err
+    pylab.plot(x_values, y_values, 'bx')
+    #pylab.plot(x_values, intercept + x_values, 'r-')
+    
+    pylab.show()
+
+def plot_data(x_values, y_values, color, label):
+    """Plot chart of x_values vs. y_values using color and label."""
+    data, = pylab.plot(x_values, y_values, color=color, label=label)
+    pylab.legend()
+    pylab.xlabel('x')
+    pylab.ylabel('y')
