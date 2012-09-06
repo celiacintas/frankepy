@@ -130,7 +130,34 @@ def dump_data_in_range(filename, mydb, x_values, y_values):
         if con:
            con.close() 
 
-
+def get_original_data(filename, mydb):
+    """Get original values (pos_in) of the db """
+    
+    try:
+        con = lite.connect(mydb)
+    
+        cursor = con.cursor()
+        cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
+        id_muestra = cursor.fetchone()
+        
+        xy_values = []
+        for row in cursor.execute("SELECT x,y FROM pos_in WHERE id_muestra = ?",(id_muestra[0],)):
+            xy_values.append((row[0], row[1]))
+        
+        cursor.close()
+        
+        return xy_values
+        
+    except lite.Error, e:
+       if con:
+          con.rollback()
+          print "Error %s:" % e.args[0]
+          sys.exit(1)
+       
+    finally:
+        if con:
+           con.close() 
+    
 def usage_and_exit():
     program_name = sys.argv[0]
     msg = """Usage: %s <input-file> 
