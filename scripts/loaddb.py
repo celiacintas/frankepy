@@ -34,6 +34,7 @@
 import csv
 import sys
 import sqlite3 as lite
+import argparse
 from calculos import load_data, INTERVAL_START, INTERVAL_END
 
 def insert_data(filename, mydb):
@@ -140,13 +141,14 @@ def get_original_data(filename, mydb):
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
         
-        xy_values = []
+        x_values = []
+        y_values = []
         for row in cursor.execute("SELECT x,y FROM pos_in WHERE id_muestra = ?",(id_muestra[0],)):
-            xy_values.append((row[0], row[1]))
-        
+            x_values.append(row[0])
+            y_values.append(row[1])
         cursor.close()
         
-        return xy_values
+        return x_values, y_values
         
     except lite.Error, e:
        if con:
@@ -168,13 +170,14 @@ def get_processed_data(filename, mydb):
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
         
-        xy_values = []
-        for row in cursor.execute("SELECT x,y FROM pos_out WHERE id_muestra = ?",(id_muestra[0],)):
-            xy_values.append((row[0], row[1]))
-        
+        x_values = []
+        y_values = []
+        for row in cursor.execute("SELECT x,y FROM pos_in WHERE id_muestra = ?",(id_muestra[0],)):
+            x_values.append(row[0])
+            y_values.append(row[1])
         cursor.close()
         
-        return xy_values
+        return x_values, y_values
         
     except lite.Error, e:
        if con:
@@ -200,12 +203,15 @@ if __name__ == '__main__':
 
     # location of db
     MYDB = "../db/frank"
-
-    try:
-        input_file = sys.argv[1]
     
-    except Exception, e:
-        usage_and_exit()
-        
-    x_values, y_values = insert_data(input_file, MYDB)
-    
+    parser = argparse.ArgumentParser(description='For getting and dumping data into the db')
+    parser.add_argument("--get", dest="get", help='This option is used to obtain data of the db, you have to pass the filename')
+    parser.add_argument("--put", dest="put", help='This is for dump values into the db, you have to pass the filename')
+    args = parser.parse_args()
+    if args.get:
+        x_values, y_values = get_original_data(args.get, MYDB)
+        x_processed_values, y_processed_values = get_processed_data(args.get, MYDB)
+        print x_values, y_values
+        #Now we can do something with this values...
+    if args.put:
+        insert_data(args.put, MYDB)
