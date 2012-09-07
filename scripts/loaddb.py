@@ -208,6 +208,7 @@ if __name__ == '__main__':
     parser.add_argument("--get", dest="get", help='This option is used to obtain data of the db, you have to pass the filename')
     parser.add_argument("--put", dest="put", help='This is for dump values into the db, you have to pass the filename')
     args = parser.parse_args()
+    
     if args.get:
         x_values, y_values = get_original_data(args.get, MYDB)
         x_processed_values, y_processed_values = get_processed_data(args.get, MYDB)
