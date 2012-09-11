@@ -35,6 +35,7 @@ import csv
 import sys
 import sqlite3 as lite
 import argparse
+from os import path
 from calculos import load_data, INTERVAL_START, INTERVAL_END
 
 
@@ -47,8 +48,10 @@ def insert_data(filename, mydb):
     x_values, y_values = load_data(filename)
     try:
         con = lite.connect(mydb)
-    
+        
         cursor = con.cursor()
+        #obtain the basename of the file for save into the db
+        filename = path.basename(filename)
         cursor.execute("INSERT INTO muestra VALUES(NULL,?)", (str(filename),))
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
@@ -81,6 +84,7 @@ def dump_data(filename, mydb, x_values, y_values, about):
         con = lite.connect(mydb)
     
         cursor = con.cursor()
+        filename = path.basename(filename)
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
         
@@ -116,6 +120,7 @@ def dump_data_in_range(filename, mydb, x_values, y_values):
         con = lite.connect(mydb)
     
         cursor = con.cursor()
+        filename = path.basename(filename)
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
         
@@ -138,10 +143,13 @@ def dump_data_in_range(filename, mydb, x_values, y_values):
 def get_original_data(filename, mydb):
     """Get original values (pos_in) of the db """
     
+    
     try:
         con = lite.connect(mydb)
     
         cursor = con.cursor()
+        filename = path.basename(filename)
+        
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
         
@@ -171,6 +179,8 @@ def get_processed_data(filename, mydb):
         con = lite.connect(mydb)
     
         cursor = con.cursor()
+        filename = path.basename(filename)
+        
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
         
