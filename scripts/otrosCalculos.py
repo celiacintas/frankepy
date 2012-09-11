@@ -32,6 +32,10 @@
 
 # $ Other authors contributing to the code are indicated in the corresponding line$
 
+
+from loaddb import insert_data, MYDB
+import argparse
+
 try:
     from scipy import std
     from scipy.stats import linregress
@@ -45,6 +49,7 @@ except ImportError:
     sys.exit(1)
 
 
+
 def do_std(values):
     """ give the standard deviation """
     return std(values)
@@ -52,14 +57,14 @@ def do_std(values):
 def do_linealregression(x_values, y_values):
     """ """
     slope, intercept, r_value, p_value, std_err = linregress(x_values, y_values)
-    #print "slope", slope
-    #print "intercept", intercept
-    #print "r_value", r_value
-    #print "p_value", std_err
-    pylab.plot(x_values, y_values, 'bx')
+    print "slope", slope
+    print "intercept", intercept
+    print "r_value", r_value
+    print "p_value", std_err
+    #pylab.plot(x_values, y_values, 'bx')
     #pylab.plot(x_values, intercept + x_values, 'r-')
-    
-    pylab.show()
+    #pylab.show()
+    return slope, intercept, r_value, p_value, std_err
 
 def plot_data(x_values, y_values, color, label):
     """Plot chart of x_values vs. y_values using color and label."""
@@ -67,3 +72,15 @@ def plot_data(x_values, y_values, color, label):
     pylab.legend()
     pylab.xlabel('x')
     pylab.ylabel('y')
+    
+
+if __name__ == '__main__':
+    
+    parser = argparse.ArgumentParser(description='For test linealregression and standar desviation')
+    parser.add_argument("-f","--file", dest="file", help='This option is used to pass the data file')
+    args = parser.parse_args()
+
+    #nos aseguramos de guardar en la db el archivo
+    x_values, y_values = insert_data(args.file, MYDB)
+    print "The standar desviation in y_values is ", do_std(y_values)
+    do_linealregression(x_values, y_values)
