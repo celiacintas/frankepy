@@ -37,6 +37,10 @@ import sqlite3 as lite
 import argparse
 from calculos import load_data, INTERVAL_START, INTERVAL_END
 
+
+# location of db
+MYDB = "../db/frank"
+    
 def insert_data(filename, mydb):
     """Insert data from file into db and return the x's y's values for ploting"""
     
@@ -201,8 +205,6 @@ Example:
 
 if __name__ == '__main__':
 
-    # location of db
-    MYDB = "../db/frank"
     
     parser = argparse.ArgumentParser(description='For getting and dumping data into the db')
     parser.add_argument("--get", dest="get", help='This option is used to obtain data of the db, you have to pass the filename')
