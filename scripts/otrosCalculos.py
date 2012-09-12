@@ -66,10 +66,12 @@ def do_linealregression(x_values, y_values):
     #pylab.show()
     return [slope, intercept, r_value, p_value, std_err]
 
-def plot_data(x_values, y_values, color, label):
+def plot_data(y_values, about, title):
     """Plot chart of x_values vs. y_values using color and label."""
-    data, = pylab.plot(x_values, y_values, color=color, label=label)
+    data, = pylab.plot(y_values)
     pylab.legend()
+    pylab.title(title)
+    pylab.text(400, -0.0002, about, {'color' : 'g', 'fontsize' : 15})
     pylab.xlabel('x')
     pylab.ylabel('y')
     
@@ -87,9 +89,11 @@ if __name__ == '__main__':
     desviation_y = do_std(y_values)
     #dump into the db
     dump_data(args.file, MYDB, [None], [desviation_y], "std")
+    plot_data( y_values,  r'$\sigma = %.18f $' %(desviation_y), "y_values and std")
     
     #do the same with lineal regression 
     results_lineal = do_linealregression(x_values, y_values)
     for value, about in zip(results_lineal, ['slope', 'intercept', 'r_value', 'p_value']):
         dump_data(args.file, MYDB, [None], [value], about)
     
+    pylab.show()
