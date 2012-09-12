@@ -88,7 +88,8 @@ def dump_data(filename, mydb, x_values, y_values, about):
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
         
-        map(lambda pos : cursor.execute("INSERT INTO pos_out VALUES(?, NULL,?,?,?, NULL, NULL, NULL)", (id_muestra[0], about, float(pos[0]), float(pos[1]))), zip(x_values, y_values))
+        map(lambda pos : cursor.execute("INSERT INTO pos_out VALUES(?, NULL,?,?,?, NULL, NULL, NULL)", (id_muestra[0], 
+                                        about, pos[0], pos[1])), zip(x_values, y_values))
         con.commit()
         cursor.close()
         
@@ -152,12 +153,15 @@ def get_original_data(filename, mydb):
         
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
-        
-        x_values = []
-        y_values = []
-        for row in cursor.execute("SELECT x,y FROM pos_in WHERE id_muestra = ?",(id_muestra[0],)):
-            x_values.append(row[0])
-            y_values.append(row[1])
+        if id_muestra:
+            x_values = []
+            y_values = []
+            for row in cursor.execute("SELECT x,y FROM pos_in WHERE id_muestra = ?",(id_muestra[0],)):
+                x_values.append(row[0])
+                y_values.append(row[1])
+        else:
+             print "These values ​​are not found in the database. Please use --put First"
+             sys.exit(1)     
         cursor.close()
         
         return x_values, y_values
@@ -183,16 +187,19 @@ def get_processed_data(filename, mydb):
         
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
-        
-        x_values = []
-        y_values = []
-        for row in cursor.execute("SELECT x,y FROM pos_in WHERE id_muestra = ?",(id_muestra[0],)):
-            x_values.append(row[0])
-            y_values.append(row[1])
+        if id_muestra:
+            x_values = []
+            y_values = []
+            for row in cursor.execute("SELECT x,y FROM pos_in WHERE id_muestra = ?",(id_muestra[0],)):
+                x_values.append(row[0])
+                y_values.append(row[1])
+        else:
+            print "These values ​​are not found in the database. Please use --put First"
+            sys.exit(1)        
+            
         cursor.close()
         
         return x_values, y_values
-        
     except lite.Error, e:
        if con:
           con.rollback()

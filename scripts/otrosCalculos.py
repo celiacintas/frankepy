@@ -33,7 +33,7 @@
 # $ Other authors contributing to the code are indicated in the corresponding line$
 
 
-from loaddb import insert_data, MYDB
+from loaddb import insert_data, dump_data, MYDB
 import argparse
 
 try:
@@ -64,7 +64,7 @@ def do_linealregression(x_values, y_values):
     #pylab.plot(x_values, y_values, 'bx')
     #pylab.plot(x_values, intercept + x_values, 'r-')
     #pylab.show()
-    return slope, intercept, r_value, p_value, std_err
+    return [slope, intercept, r_value, p_value, std_err]
 
 def plot_data(x_values, y_values, color, label):
     """Plot chart of x_values vs. y_values using color and label."""
@@ -79,8 +79,17 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='For test linealregression and standar desviation')
     parser.add_argument("-f","--file", dest="file", help='This option is used to pass the data file')
     args = parser.parse_args()
-
+    
     #nos aseguramos de guardar en la db el archivo
     x_values, y_values = insert_data(args.file, MYDB)
-    print "The standar desviation in y_values is ", do_std(y_values)
-    do_linealregression(x_values, y_values)
+    
+    #obtain de std of y values
+    desviation_y = do_std(y_values)
+    #dump into the db
+    dump_data(args.file, MYDB, [None], [desviation_y], "std")
+    
+    #do the same with lineal regression 
+    results_lineal = do_linealregression(x_values, y_values)
+    for value, about in zip(results_lineal, ['slope', 'intercept', 'r_value', 'p_value']):
+        dump_data(args.file, MYDB, [None], [value], about)
+    
