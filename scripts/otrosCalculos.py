@@ -74,6 +74,7 @@ def plot_data(y_values, about, title):
     pylab.text(400, -0.0002, about, {'color' : 'g', 'fontsize' : 15})
     pylab.xlabel('x')
     pylab.ylabel('y')
+    pylab.savefig("../plots/matplot2std.png",dpi = 100)
     
 
 if __name__ == '__main__':
@@ -89,7 +90,7 @@ if __name__ == '__main__':
     desviation_y = do_std(y_values)
     #dump into the db
     dump_data(args.file, MYDB, [None], [desviation_y], "std")
-    plot_data( y_values,  r'$\sigma = %.18f $' %(desviation_y), "y_values and std")
+    plot_data(y_values,  r'$\sigma = %.18f $' %(desviation_y), "y_values and std")
     
     #do the same with lineal regression 
     results_lineal = do_linealregression(x_values, y_values)
