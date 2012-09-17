@@ -1,0 +1,8 @@
+#How to load data into the db
+
+ $ python loaddb.py --put ../fileTest/12096-CV.txt 
+ 
+#How to get values from the db (just for testing now)
+
+ $ python loaddb.py --get ../fileTest/12096-CV.txt 
+
