@@ -34,7 +34,10 @@
 
 
 from loaddb import insert_data, dump_data, MYDB
+from os import path
+from calculos import DELIMITER_ASCII_OUT
 import argparse
+
 
 try:
     from scipy import std
@@ -49,6 +52,13 @@ except ImportError:
     sys.exit(1)
 
 
+def save_ascii(ascii_file, x_values, y_values):
+    "Save the data to a file"
+    values = zip(x_values, y_values)
+    f = open(ascii_file, 'w')
+    for value in values:
+        f.write("%s %s %.18f\n" % (value[0], DELIMITER_ASCII_OUT, value[1]))
+    f.close()
 
 def do_std(values):
     """ give the standard deviation """
@@ -94,7 +104,11 @@ if __name__ == '__main__':
     
     #do the same with lineal regression 
     results_lineal = do_linealregression(x_values, y_values)
-    for value, about in zip(results_lineal, ['slope', 'intercept', 'r_value', 'p_value']):
-        dump_data(args.file, MYDB, [None], [value], about)
+    labels = ['slope', 'intercept', 'r_value', 'p_value']
     
+    for value, about in zip(results_lineal, labels):
+        dump_data(args.file, MYDB, [None], [value], about)
+        filename = "../fileTest/liear_fit"+ path.basename(args.file)
+        save_ascii(filename, labels, results_lineal)
+        
     pylab.show()

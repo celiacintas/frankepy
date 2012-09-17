@@ -94,7 +94,7 @@ if __name__ == '__main__':
     pos, neg = diff_integrate(x_values, y_values)
 
     # dump results to db with some sort of comment 
-    dump_data(input_file, MYDB, [pos], [neg], "Integrals positive and negative")
+    dump_data(input_file, MYDB, [float(pos)], [float(neg)], "Integrals positive and negative")
 
     # show all the plots
     pylab.show()
