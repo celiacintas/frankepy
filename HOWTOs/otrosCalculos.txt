@@ -1,6 +1,6 @@
 #How to get std and lineal regression:
 #this one will save the input data and the results into 
-#the db and save teh figure in the plots folder
+#the db (and files in fileTest) and save teh figure in the plots folder
 
  
  $ python otrosCalculos.py -f ../fileTest/12096-CV.txt
