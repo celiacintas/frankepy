@@ -6,3 +6,8 @@
 
  $ python loaddb.py --get ../fileTest/12096-CV.txt 
 
+#How to get the results of linear regression from the db
+
+ $ python loaddb.py --get-lineal-r ../fileTest/12096-CV.txt
+
+

@@ -209,7 +209,47 @@ def get_processed_data(filename, mydb):
     finally:
         if con:
            con.close() 
+
+def get_lineal_regression(filename, mydb):
+    try:
+        con = lite.connect(mydb)
+    
+        cursor = con.cursor()
+        filename = path.basename(filename)
         
+        cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
+        id_muestra = cursor.fetchone()
+        if id_muestra:
+            cursor.execute("SELECT y FROM pos_out WHERE id_muestra = ? AND about = 'std'",(id_muestra[0],))
+	    std = cursor.fetchone()
+            cursor.execute("SELECT y FROM pos_out WHERE id_muestra = ? AND about = 'slope'",(id_muestra[0],))
+	    slope = cursor.fetchone()
+            cursor.execute("SELECT y FROM pos_out WHERE id_muestra = ? AND about = 'intercept'",(id_muestra[0],))
+	    intercept = cursor.fetchone()
+            cursor.execute("SELECT y FROM pos_out WHERE id_muestra = ? AND about = 'r_value'",(id_muestra[0],))
+	    r_value = cursor.fetchone()
+            cursor.execute("SELECT y FROM pos_out WHERE id_muestra = ? AND about = 'p_value'",(id_muestra[0],))
+	    p_value = cursor.fetchone()
+    
+    	else:
+            print "These values are not found in the database. Please use otrosCalculos  First"
+            sys.exit(1)        
+            
+        cursor.close()
+        
+        return std[0], slope[0], intercept[0], r_value[0], p_value[0]
+
+    except lite.Error, e:
+       if con:
+          con.rollback()
+          print "Error %s:" % e.args[0]
+          sys.exit(1)
+       
+    finally:
+        if con:
+           con.close() 
+
+
 def usage_and_exit():
     program_name = sys.argv[0]
     msg = """Usage: %s <input-file> 
@@ -225,6 +265,7 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser(description='For getting and dumping data into the db')
     parser.add_argument("--get", dest="get", help='This option is used to obtain data of the db, you have to pass the filename')
+    parser.add_argument("--get-lineal-r", dest="get_lineal", help='This option is used to obtain the values of lineal regression of the db, you have to pass the filename')
     parser.add_argument("--put", dest="put", help='This is for dump values into the db, you have to pass the filename')
     args = parser.parse_args()
     
@@ -235,3 +276,12 @@ if __name__ == '__main__':
         #Now we can do something with this values...
     if args.put:
         insert_data(args.put, MYDB)
+    if args.get_lineal:
+	std, slope, intercept, r_value, p_value = get_lineal_regression(args.get_lineal, MYDB)
+	#do something with this values
+	print """
+	      std : %1.8f 
+	      slope : %1.8f 
+	      intercept : %1.8f
+	      r_value : %1.8f 
+	      p_value : %1.8f """%(std, slope, intercept, r_value, p_value)
