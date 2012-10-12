@@ -32,10 +32,11 @@
 # $ Other authors contributing to the code are indicated in the corresponding line$
 
 import csv
+import re
 import sys
 import sqlite3 as lite
 import argparse
-from os import path
+from os import path, listdir
 from calculos import load_data, INTERVAL_START, INTERVAL_END
 
 
@@ -160,7 +161,7 @@ def get_original_data(filename, mydb):
                 x_values.append(row[0])
                 y_values.append(row[1])
         else:
-             print "These values ​​are not found in the database. Please use --put First"
+             print "These values are not found in the database. Please use --put First"
              sys.exit(1)     
         cursor.close()
         
@@ -194,7 +195,7 @@ def get_processed_data(filename, mydb):
                 x_values.append(row[0])
                 y_values.append(row[1])
         else:
-            print "These values ​​are not found in the database. Please use --put First"
+            print "These values are not found in the database. Please use --put First"
             sys.exit(1)        
             
         cursor.close()
@@ -249,6 +250,46 @@ def get_lineal_regression(filename, mydb):
         if con:
            con.close() 
 
+def insert_multiple_files(dirFiles, mydb):
+	"""Get the files from a dir and dumped into the db"""
+	
+	files = listdir(dirFiles)
+	for f in files:
+		insert_data(path.join(dirFiles, f), mydb)
+
+def get_filenames_with_re(name, mydb):
+    """Get the descriptions that start with name """
+
+    try:
+        con = lite.connect(mydb)
+    
+        cursor = con.cursor()
+	#we tell to the db we only want description that start with 'name'
+        rex = '^' + name 
+	descripciones = []
+	for row in  cursor.execute("SELECT descripcion FROM muestra"):
+		if (re.match(rex,row[0])):
+			descripciones.append(row[0])
+        
+	if not descripciones:
+            print "These values are not found in the database. Please use --put First"
+            sys.exit(1)        
+            
+        cursor.close()
+        
+        return descripciones
+
+    except lite.Error, e:
+       if con:
+          con.rollback()
+          print "Error %s:" % e.args[0]
+          sys.exit(1)
+       
+    finally:
+        if con:
+           con.close() 
+
+
 
 def usage_and_exit():
     program_name = sys.argv[0]
@@ -266,16 +307,38 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='For getting and dumping data into the db')
     parser.add_argument("--get", dest="get", help='This option is used to obtain data of the db, you have to pass the filename')
     parser.add_argument("--get-lineal-r", dest="get_lineal", help='This option is used to obtain the values of lineal regression of the db, you have to pass the filename')
-    parser.add_argument("--put", dest="put", help='This is for dump values into the db, you have to pass the filename')
+    parser.add_argument("--put", dest="put", help='This is for dump values into the db, you have to pass the filename or a path')
     args = parser.parse_args()
     
     if args.get:
-        x_values, y_values = get_original_data(args.get, MYDB)
-        x_processed_values, y_processed_values = get_processed_data(args.get, MYDB)
-        print x_values, y_values
+	    if path.isfile(args.get):
+		    #its a file not just a part of the name
+		    x_values, y_values = get_original_data(args.get, MYDB)
+		    x_processed_values, y_processed_values = get_processed_data(args.get, MYDB)
+	    else:
+		    #its a RE
+		    descriptions = get_filenames_with_re(args.get, MYDB)
+		    x_values = []; y_values = []
+		    x_total_proc_values = []; y_total_proc_values = []
+
+		    for d in descriptions:
+			    xs,  ys = get_original_data(d, MYDB)
+			    x_values += xs
+			    y_values += ys
+
+			    xps, yps = get_processed_data(d, MYDB)
+			    x_total_proc_values += xps
+			    y_total_proc_values += yps
+
+
+
+    print x_values, y_values
         #Now we can do something with this values...
     if args.put:
-        insert_data(args.put, MYDB)
+	if path.isfile(args.put):
+        	insert_data(args.put, MYDB)
+	else:
+		insert_multiple_files(args.put, MYDB)
     if args.get_lineal:
 	std, slope, intercept, r_value, p_value = get_lineal_regression(args.get_lineal, MYDB)
 	#do something with this values
