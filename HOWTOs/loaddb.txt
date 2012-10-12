@@ -1,10 +1,11 @@
-#How to load data into the db
+#How to load data into the db, you can put the file or directory to load multiple files.
 
  $ python loaddb.py --put ../fileTest/12096-CV.txt 
  
-#How to get values from the db (just for testing now)
+#How to get values from the db (just for testing now) you can put the start of the file
+#to get all the values from files that start with  letters
 
- $ python loaddb.py --get ../fileTest/12096-CV.txt 
+ $ python loaddb.py --get 12096-CV.txt 
 
 #How to get the results of linear regression from the db
 
