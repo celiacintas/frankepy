@@ -315,6 +315,7 @@ if __name__ == '__main__':
 		    #its a file not just a part of the name
 		    x_values, y_values = get_original_data(args.get, MYDB)
 		    x_processed_values, y_processed_values = get_processed_data(args.get, MYDB)
+		    print x_values, y_values
 	    else:
 		    #its a RE
 		    descriptions = get_filenames_with_re(args.get, MYDB)
@@ -329,10 +330,10 @@ if __name__ == '__main__':
 			    xps, yps = get_processed_data(d, MYDB)
 			    x_total_proc_values += xps
 			    y_total_proc_values += yps
+		    
+		    print x_values, y_values
 
 
-
-    print x_values, y_values
         #Now we can do something with this values...
     if args.put:
 	if path.isfile(args.put):
