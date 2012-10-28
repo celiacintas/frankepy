@@ -142,7 +142,7 @@ def dump_data_in_range(filename, mydb, x_values, y_values):
         if con:
            con.close() 
 
-def get_original_data(filename, mydb):
+def get_original_data(filename, mydb = MYDB):
     """Get original values (pos_in) of the db """
     
     
@@ -177,7 +177,7 @@ def get_original_data(filename, mydb):
         if con:
            con.close() 
 
-def get_processed_data(filename, mydb):
+def get_processed_data(filename, mydb = MYDB):
     """Get processed values (pos_out) of the db """
     
     try:
@@ -211,7 +211,7 @@ def get_processed_data(filename, mydb):
         if con:
            con.close() 
 
-def get_lineal_regression(filename, mydb):
+def get_lineal_regression(filename, mydb = MYDB):
     try:
         con = lite.connect(mydb)
     
@@ -250,14 +250,14 @@ def get_lineal_regression(filename, mydb):
         if con:
            con.close() 
 
-def insert_multiple_files(dirFiles, mydb):
+def insert_multiple_files(dirFiles, mydb = MYDB):
 	"""Get the files from a dir and dumped into the db"""
 	
 	files = listdir(dirFiles)
 	for f in files:
 		insert_data(path.join(dirFiles, f), mydb)
 
-def get_filenames_with_re(name, mydb):
+def get_filenames_with_re(name, mydb = MYDB):
     """Get the descriptions that start with name """
 
     try:

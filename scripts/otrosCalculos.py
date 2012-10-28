@@ -81,34 +81,30 @@ def plot_data(y_values, about, title):
     data, = pylab.plot(y_values)
     pylab.legend()
     pylab.title(title)
-    pylab.text(400, -0.0002, about, {'color' : 'g', 'fontsize' : 15})
+    pylab.text(400, -0.0002, about, {'color': 'g', 'fontsize': 15})
     pylab.xlabel('x')
     pylab.ylabel('y')
-    pylab.savefig("../plots/matplot2std.png",dpi = 100)
-    
+    pylab.savefig("../plots/matplot2std.png", dpi = 100)
+
 
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser(description='For test linealregression and standar desviation')
-    parser.add_argument("-f","--file", dest="file", help='This option is used to pass the data file')
-    args = parser.parse_args()
-    
+    parser.add_argument("-f", "--file", dest="file", help='This option is used to pass the data file')
+    args = parser.parse_args()    
     #nos aseguramos de guardar en la db el archivo
     x_values, y_values = insert_data(args.file, MYDB)
-    
     #obtain de std of y values
     desviation_y = do_std(y_values)
     #dump into the db
     dump_data(args.file, MYDB, [None], [desviation_y], "std")
     plot_data(y_values,  r'$\sigma = %.18f $' %(desviation_y), "y_values and std")
-    
     #do the same with lineal regression 
     results_lineal = do_linealregression(x_values, y_values)
     labels = ['slope', 'intercept', 'r_value', 'p_value']
-    
+
     for value, about in zip(results_lineal, labels):
         dump_data(args.file, MYDB, [None], [value], about)
-        filename = "../fileTest/liear_fit"+ path.basename(args.file)
+        filename = "../fileTest/liear_fit" + path.basename(args.file)
         save_ascii(filename, labels, results_lineal)
-        
     pylab.show()
