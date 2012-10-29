@@ -31,14 +31,13 @@
 #       Celia Cintas    (cintas.celia at gmail dot com)
 # $ Other authors contributing to the code are indicated in the corresponding line$
 
-import csv
 import re
 import sys
 import sqlite3 as lite
 import argparse
 from os import path, listdir
-from calculos import load_data, INTERVAL_START, INTERVAL_END
-
+#from calculos import load_data, INTERVAL_START, INTERVAL_END
+from numpy import loadtxt
 
 # location of db
 MYDB = "../db/frank"
@@ -46,7 +45,7 @@ MYDB = "../db/frank"
 def insert_data(filename, mydb):
     """Insert data from file into db and return the x's y's values for ploting"""
     
-    x_values, y_values = load_data(filename)
+    xy_values = loadtxt(filename)
     try:
         con = lite.connect(mydb)
         
@@ -57,11 +56,10 @@ def insert_data(filename, mydb):
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
         
-        map(lambda pos : cursor.execute("INSERT INTO pos_in VALUES(?,NULL,?,?, NULL)", (id_muestra[0], float(pos[0]), float(pos[1]))), zip(x_values, y_values))
+        map(lambda values : cursor.execute("INSERT INTO pos_in VALUES(?,NULL,?,?, NULL)", (id_muestra[0], values[0], values[1]),xy_values))
         con.commit()
         cursor.close()
-        print x_values, y_values 
-        return x_values, y_values
+        return getx_y_values(xy_values)
     
     except lite.DatabaseError, e:
         print u"Data already in the db, working with them anywhere"
@@ -77,6 +75,18 @@ def insert_data(filename, mydb):
     finally:
         if con:
            con.close() 
+
+def getx_y_values(xy_values):
+	"""split the list that return loadtxt from numpy
+	and gime back x and y data"""
+	x = []
+	y = []
+
+	for xy in xy_values:
+		x.append(xy[0])
+		y.append(xy[1])
+
+	return x,y
 
 def dump_data(filename, mydb, x_values, y_values, about):
     """Dump values into the db """
