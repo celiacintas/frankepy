@@ -41,22 +41,25 @@ from numpy import loadtxt
 
 # location of db
 MYDB = "../db/frank"
-    
+NUMOFCOLUMNS = (0, 1)    
+
 def insert_data(filename, mydb):
     """Insert data from file into db and return the x's y's values for ploting"""
     
-    xy_values = loadtxt(filename)
+
     try:
+
         con = lite.connect(mydb)
+    	xy_values = loadtxt(filename)
         
-        cursor = con.cursor()
+	cursor = con.cursor()
         #obtain the basename of the file for save into the db
         filename = path.basename(filename)
         cursor.execute("INSERT INTO muestra VALUES(NULL,?)", (str(filename),))
         cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
         id_muestra = cursor.fetchone()
         
-        map(lambda values : cursor.execute("INSERT INTO pos_in VALUES(?,NULL,?,?, NULL)", (id_muestra[0], values[0], values[1]),xy_values))
+        map(lambda values : cursor.execute("INSERT INTO pos_in VALUES(?,NULL,?,?, NULL)", (id_muestra[0], values[0], values[1])),xy_values)
         con.commit()
         cursor.close()
         return getx_y_values(xy_values)
@@ -64,14 +67,16 @@ def insert_data(filename, mydb):
     except lite.DatabaseError, e:
         print u"Data already in the db, working with them anywhere"
         
-        return x_values, y_values
+        return getx_y_values(xy_values)
         
     except lite.Error, e:
        if con:
           con.rollback()
           print "Error %s:" % e.args[0]
           sys.exit(1)
-       
+
+    #except ValueError, e:
+#	    print e
     finally:
         if con:
            con.close() 
