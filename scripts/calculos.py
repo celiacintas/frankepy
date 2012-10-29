@@ -81,12 +81,20 @@ Example:
     print(msg)
     sys.exit(1)
 
+def formateo(filename):
+	fi = open(filename)
+	lines = fi.readlines()
+	newlines = []
+	for l in lines:
+		newlines.append(l.replace("   "," "))
+	#TODO terminar
 def load_data(filename):
     """Load data from file at location filename."""
 
     x_values = []
     y_values = []
-
+    #parche para archivos con varios espacios
+    formateo(filename)
     f = open(filename, 'r')
     reader = csv.reader(f, delimiter=DELIMITER_IN)
     for line in reader:

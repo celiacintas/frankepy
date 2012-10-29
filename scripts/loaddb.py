@@ -60,7 +60,7 @@ def insert_data(filename, mydb):
         map(lambda pos : cursor.execute("INSERT INTO pos_in VALUES(?,NULL,?,?, NULL)", (id_muestra[0], float(pos[0]), float(pos[1]))), zip(x_values, y_values))
         con.commit()
         cursor.close()
-        
+        print x_values, y_values 
         return x_values, y_values
     
     except lite.DatabaseError, e:
