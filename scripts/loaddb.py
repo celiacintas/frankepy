@@ -29,7 +29,8 @@
 
 # Authors:
 #       Celia Cintas    (cintas.celia at gmail dot com)
-# $ Other authors contributing to the code are indicated in the corresponding line$
+# $ Other authors contributing to the code are indicated in the corresponding 
+#line$
 
 import re
 import sys
@@ -38,271 +39,17 @@ import argparse
 from os import path, listdir
 #from calculos import load_data, INTERVAL_START, INTERVAL_END
 from numpy import loadtxt
+from repositorio import Repositorio
 
 # location of db
 MYDB = "../db/frank"
-NUMOFCOLUMNS = (0, 1)    
-
-def insert_data(filename, mydb):
-    """Insert data from file into db and return the x's y's values for ploting"""
-    
-
-    try:
-
-        con = lite.connect(mydb)
-    	xy_values = loadtxt(filename)
-        
-	cursor = con.cursor()
-        #obtain the basename of the file for save into the db
-        filename = path.basename(filename)
-        cursor.execute("INSERT INTO muestra VALUES(NULL,?)", (str(filename),))
-        cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
-        id_muestra = cursor.fetchone()
-        
-        map(lambda values : cursor.execute("INSERT INTO pos_in VALUES(?,NULL,?,?, NULL)", (id_muestra[0], values[0], values[1])),xy_values)
-        con.commit()
-        cursor.close()
-        return getx_y_values(xy_values)
-    
-    except lite.DatabaseError, e:
-        print u"Data already in the db, working with them anywhere"
-        
-        return getx_y_values(xy_values)
-        
-    except lite.Error, e:
-       if con:
-          con.rollback()
-          print "Error %s:" % e.args[0]
-          sys.exit(1)
-
-    #except ValueError, e:
-#	    print e
-    finally:
-        if con:
-           con.close() 
-
-def getx_y_values(xy_values):
-	"""split the list that return loadtxt from numpy
-	and gime back x and y data"""
-	x = []
-	y = []
-
-	for xy in xy_values:
-		x.append(xy[0])
-		y.append(xy[1])
-
-	return x,y
-
-def dump_data(filename, mydb, x_values, y_values, about):
-    """Dump values into the db """
-    
-    try:
-        con = lite.connect(mydb)
-    
-        cursor = con.cursor()
-        filename = path.basename(filename)
-        cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
-        id_muestra = cursor.fetchone()
-        
-        map(lambda pos : cursor.execute("INSERT INTO pos_out VALUES(?, NULL,?,?,?, NULL, NULL, NULL)", (id_muestra[0], 
-                                        about, pos[0], pos[1])), zip(x_values, y_values))
-        con.commit()
-        cursor.close()
-        
-    except lite.Error, e:
-       if con:
-          con.rollback()
-          print "Error %s:" % e.args[0]
-          sys.exit(1)
-       
-    finally:
-        if con:
-           con.close() 
-           
-def dump_data_in_range(filename, mydb, x_values, y_values):
-    """Dump values in certain range into the db """
-    #this part of the code is from Lucia, just adding map for dump in the db
-    
-    filter_function = lambda (x, y): INTERVAL_START <= x <= INTERVAL_END
-    if INTERVAL_START > INTERVAL_END:
-        print('NOTICE: The interval start %s is bigger than the interval end %s, using all the data.' %
-              (INTERVAL_START, INTERVAL_END))
-        interval_values = zip(x_values, y_values)
-    else:
-        print('NOTICE: Calculating integrals for every value in the closed interval [%s, %s].' %
-              (INTERVAL_START, INTERVAL_END))
-        interval_values = filter(filter_function, zip(x_values, y_values))
-        
-    try:
-        con = lite.connect(mydb)
-    
-        cursor = con.cursor()
-        filename = path.basename(filename)
-        cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
-        id_muestra = cursor.fetchone()
-        
-        map(lambda values : cursor.execute("INSERT INTO pos_out VALUES(?, NULL, NULL, ?, ?, NULL, ?, ?)", 
-        (id_muestra[0], float(values[0])/1.0, float(values[1]), INTERVAL_START, INTERVAL_END)), interval_values)
-        
-        con.commit()
-        cursor.close()
-        
-    except lite.Error, e:
-       if con:
-          con.rollback()
-          print "Error %s:" % e.args[0]
-          sys.exit(1)
-       
-    finally:
-        if con:
-           con.close() 
-
-def get_original_data(filename, mydb = MYDB):
-    """Get original values (pos_in) of the db """
-    
-    
-    try:
-        con = lite.connect(mydb)
-    
-        cursor = con.cursor()
-        filename = path.basename(filename)
-        
-        cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
-        id_muestra = cursor.fetchone()
-        if id_muestra:
-            x_values = []
-            y_values = []
-            for row in cursor.execute("SELECT x,y FROM pos_in WHERE id_muestra = ?",(id_muestra[0],)):
-                x_values.append(row[0])
-                y_values.append(row[1])
-        else:
-             print "These values are not found in the database. Please use --put First"
-             sys.exit(1)     
-        cursor.close()
-        
-        return x_values, y_values
-        
-    except lite.Error, e:
-       if con:
-          con.rollback()
-          print "Error %s:" % e.args[0]
-          sys.exit(1)
-       
-    finally:
-        if con:
-           con.close() 
-
-def get_processed_data(filename, mydb = MYDB):
-    """Get processed values (pos_out) of the db """
-    
-    try:
-        con = lite.connect(mydb)
-    
-        cursor = con.cursor()
-        filename = path.basename(filename)
-        
-        cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
-        id_muestra = cursor.fetchone()
-        if id_muestra:
-            x_values = []
-            y_values = []
-            for row in cursor.execute("SELECT x,y FROM pos_in WHERE id_muestra = ?",(id_muestra[0],)):
-                x_values.append(row[0])
-                y_values.append(row[1])
-        else:
-            print "These values are not found in the database. Please use --put First"
-            sys.exit(1)        
-            
-        cursor.close()
-        
-        return x_values, y_values
-    except lite.Error, e:
-       if con:
-          con.rollback()
-          print "Error %s:" % e.args[0]
-          sys.exit(1)
-       
-    finally:
-        if con:
-           con.close() 
-
-def get_lineal_regression(filename, mydb = MYDB):
-    try:
-        con = lite.connect(mydb)
-    
-        cursor = con.cursor()
-        filename = path.basename(filename)
-        
-        cursor.execute("SELECT id_muestra FROM muestra WHERE descripcion = ?",(str(filename),))
-        id_muestra = cursor.fetchone()
-        if id_muestra:
-            cursor.execute("SELECT y FROM pos_out WHERE id_muestra = ? AND about = 'std'",(id_muestra[0],))
-	    std = cursor.fetchone()
-            cursor.execute("SELECT y FROM pos_out WHERE id_muestra = ? AND about = 'slope'",(id_muestra[0],))
-	    slope = cursor.fetchone()
-            cursor.execute("SELECT y FROM pos_out WHERE id_muestra = ? AND about = 'intercept'",(id_muestra[0],))
-	    intercept = cursor.fetchone()
-            cursor.execute("SELECT y FROM pos_out WHERE id_muestra = ? AND about = 'r_value'",(id_muestra[0],))
-	    r_value = cursor.fetchone()
-            cursor.execute("SELECT y FROM pos_out WHERE id_muestra = ? AND about = 'p_value'",(id_muestra[0],))
-	    p_value = cursor.fetchone()
-    
-    	else:
-            print "These values are not found in the database. Please use otrosCalculos  First"
-            sys.exit(1)        
-            
-        cursor.close()
-        
-        return std[0], slope[0], intercept[0], r_value[0], p_value[0]
-
-    except lite.Error, e:
-       if con:
-          con.rollback()
-          print "Error %s:" % e.args[0]
-          sys.exit(1)
-       
-    finally:
-        if con:
-           con.close() 
 
 def insert_multiple_files(dirFiles, mydb = MYDB):
-	"""Get the files from a dir and dumped into the db"""
+     """Get the files from a dir and dumped into the db"""
 	
-	files = listdir(dirFiles)
-	for f in files:
-		insert_data(path.join(dirFiles, f), mydb)
-
-def get_filenames_with_re(name, mydb = MYDB):
-    """Get the descriptions that start with name """
-
-    try:
-        con = lite.connect(mydb)
-    
-        cursor = con.cursor()
-	#we tell to the db we only want description that start with 'name'
-        rex = '^' + name 
-	descripciones = []
-	for row in  cursor.execute("SELECT descripcion FROM muestra"):
-		if (re.match(rex,row[0])):
-			descripciones.append(row[0])
-        
-	if not descripciones:
-            print "These values are not found in the database. Please use --put First"
-            sys.exit(1)        
-            
-        cursor.close()
-        
-        return descripciones
-
-    except lite.Error, e:
-       if con:
-          con.rollback()
-          print "Error %s:" % e.args[0]
-          sys.exit(1)
-       
-    finally:
-        if con:
-           con.close() 
+     files = listdir(dirFiles)
+     for f in files:
+         myDB.insert_data(path.join(dirFiles, f))
 
 
 
@@ -317,50 +64,52 @@ Example:
     sys.exit(1)
 
 if __name__ == '__main__':
-
-    
-    parser = argparse.ArgumentParser(description='For getting and dumping data into the db')
-    parser.add_argument("--get", dest="get", help='This option is used to obtain data of the db, you have to pass the filename')
-    parser.add_argument("--get-lineal-r", dest="get_lineal", help='This option is used to obtain the values of lineal regression of the db, you have to pass the filename')
-    parser.add_argument("--put", dest="put", help='This is for dump values into the db, you have to pass the filename or a path')
+    parser = argparse.ArgumentParser(description="""For getting and dumping data
+                                                  into the db""")
+    parser.add_argument("--get", dest="get", help="""This option is used to
+    obtain data of the db, you have to pass the filename""")
+    parser.add_argument("--get-lineal-r", dest="get_lineal", help="""This
+    option is used to obtain the values of lineal regression of the db,
+    you have to pass the filename""")
+    parser.add_argument("--put", dest="put", help="""This is for dump values
+    into the db, you have to pass the filename or a path""")
     args = parser.parse_args()
-    
+
+    myDB = Repositorio(MYDB)
     if args.get:
-	    if path.isfile(args.get):
-		    #its a file not just a part of the name
-		    x_values, y_values = get_original_data(args.get, MYDB)
-		    x_processed_values, y_processed_values = get_processed_data(args.get, MYDB)
-		    print x_values, y_values
-	    else:
-		    #its a RE
-		    descriptions = get_filenames_with_re(args.get, MYDB)
-		    x_values = []; y_values = []
-		    x_total_proc_values = []; y_total_proc_values = []
+        if path.isfile(args.get):
+            #its a file not just a part of the name
+            values = myDB.get_original_data(args.get)
+            x_processed_values, y_processed_values = myDB.get_processed_data(args.get)
+            print x_values, y_values
+        else:
+            #its a RE
+            descriptions = myDB.get_filenames_with_re(args.get)
+            x_values = []; y_values = []
+            x_total_proc_values = []; y_total_proc_values = []
 
-		    for d in descriptions:
-			    xs,  ys = get_original_data(d, MYDB)
-			    x_values += xs
-			    y_values += ys
+            for d in descriptions:
+                values = myDB.get_original_data(d)
+                x_values += values[0]
+                y_values += values[1]
 
-			    xps, yps = get_processed_data(d, MYDB)
-			    x_total_proc_values += xps
-			    y_total_proc_values += yps
+                xps, yps = myDB.get_processed_data(d)
+                x_total_proc_values += xps
+                y_total_proc_values += yps
 		    
-		    print x_values, y_values
-
-
-        #Now we can do something with this values...
+		print x_values, y_values
+    #Now we can do something with this values...
     if args.put:
-	if path.isfile(args.put):
-        	insert_data(args.put, MYDB)
-	else:
-		insert_multiple_files(args.put, MYDB)
+        if path.isfile(args.put):
+            myDB.insert_data(args.put)
+        else:
+            insert_multiple_files(args.put)
     if args.get_lineal:
-	std, slope, intercept, r_value, p_value = get_lineal_regression(args.get_lineal, MYDB)
-	#do something with this values
-	print """
-	      std : %1.8f 
-	      slope : %1.8f 
-	      intercept : %1.8f
-	      r_value : %1.8f 
-	      p_value : %1.8f """%(std, slope, intercept, r_value, p_value)
+        std, slope, intercept, r_value, p_value = myDB.get_lineal_regression(args.get_lineal)
+        #do something with this values
+        print """
+            std : %1.8f 
+            slope : %1.8f 
+            intercept : %1.8f
+            r_value : %1.8f 
+            p_value : %1.8f """ % (std, slope, intercept, r_value, p_value)
