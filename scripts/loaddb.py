@@ -32,13 +32,9 @@
 # $ Other authors contributing to the code are indicated in the corresponding 
 #line$
 
-import re
 import sys
-import sqlite3 as lite
 import argparse
 from os import path, listdir
-#from calculos import load_data, INTERVAL_START, INTERVAL_END
-from numpy import loadtxt
 from repositorio import Repositorio
 
 # location of db
