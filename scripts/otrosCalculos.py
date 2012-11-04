@@ -30,10 +30,12 @@
 # Authors:
 #       Celia Cintas (cintas dot celia at gmail dot com)
 
-# $ Other authors contributing to the code are indicated in the corresponding line$
+# $ Other authors contributing to the code are indicated in the corresponding 
+#line$
 
 
-from loaddb import insert_data, dump_data, MYDB
+from loaddb import MYDB
+from repositorio import Repositorio
 from os import path
 from calculos import DELIMITER_ASCII_OUT
 import argparse
@@ -92,19 +94,23 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='For test linealregression and standar desviation')
     parser.add_argument("-f", "--file", dest="file", help='This option is used to pass the data file')
     args = parser.parse_args()    
+    myDB = Repositorio(MYDB)
     #nos aseguramos de guardar en la db el archivo
-    x_values, y_values = insert_data(args.file, MYDB)
+
+    values = myDB.insert_data(args.file)
     #obtain de std of y values
-    desviation_y = do_std(y_values)
+    desviation_y = do_std(values[1])
+    
     #dump into the db
-    dump_data(args.file, MYDB, [None], [desviation_y], "std")
-    plot_data(y_values,  r'$\sigma = %.18f $' %(desviation_y), "y_values and std")
+    myDB.dump_data(args.file, [None], [desviation_y], "std")
+    plot_data(values[1],  r'$\sigma = %.18f $' %(desviation_y), "y_values and std")
+    
     #do the same with lineal regression 
-    results_lineal = do_linealregression(x_values, y_values)
+    results_lineal = do_linealregression(values[0], values[1])
     labels = ['slope', 'intercept', 'r_value', 'p_value']
 
     for value, about in zip(results_lineal, labels):
-        dump_data(args.file, MYDB, [None], [value], about)
+        myDB.dump_data(args.file, [None], [value], about)
         filename = "../fileTest/liear_fit" + path.basename(args.file)
         save_ascii(filename, labels, results_lineal)
     pylab.show()
